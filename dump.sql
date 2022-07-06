@@ -2065,6 +2065,10 @@ ALTER TABLE ONLY public.userprojects
 
 -- CHANGES TO BRING UP TO DATE WITH CURRENT SCHEMA
 
+-- add new meta columns
+ALTER TABLE view_columns ADD COLUMN "_cellContentType" string;
+ALTER TABLE view_columns ADD COLUMN "__columnIndex__" integer;
+
 -- create index columns
 ALTER TABLE p2_new ADD COLUMN index integer;
 ALTER TABLE p2_komission ADD COLUMN index integer;
@@ -2131,5 +2135,18 @@ SELECT setval('ks_row_index', 1);
 DROP SEQUENCE ks_row_index;
 
 -- update view column metadata
+UPDATE view_columns SET "_cellContentType"='string';
+UPDATE view_columns SET "_cellContentType"='number'
+  WHERE "displayName" IN ('ID', 'Index');
+UPDATE view_columns SET "minWidth"=128
+  WHERE "displayName" != 'ID';
+UPDATE view_columns SET width=80 WHERE "displayName"='ID';
+
+-- We count the number of columns with a smaller ID, thus creating an ascending
+-- index from 1 to n.
+UPDATE view_columns vc1
+SET "__columnIndex__" =
+  (SELECT count(*) FROM view_columns vc2
+    WHERE vc1.view_id=vc2.view_id AND vc2._id<=vc1._id);
 
 -- remove garbage views and columns
