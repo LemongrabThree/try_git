@@ -2066,87 +2066,89 @@ ALTER TABLE ONLY public.userprojects
 -- CHANGES TO BRING UP TO DATE WITH CURRENT SCHEMA
 
 -- add new meta columns
-ALTER TABLE view_columns ADD COLUMN "_cellContentType" string;
-ALTER TABLE view_columns ADD COLUMN "__columnIndex__" integer;
+ALTER TABLE public.view_columns ADD COLUMN "_cellContentType" text;
+ALTER TABLE public.view_columns ADD COLUMN "__columnIndex__" integer;
 
 -- create index columns
-ALTER TABLE p2_new ADD COLUMN index integer;
-ALTER TABLE p2_komission ADD COLUMN index integer;
-ALTER TABLE p2_anstellungen ADD COLUMN index integer;
-ALTER TABLE p2_einrichtungen ADD COLUMN index integer;
-ALTER TABLE p2_komissionsmitgliedschaften ADD COLUMN index integer;
-ALTER TABLE p2_personaldetails ADD COLUMN index integer;
-ALTER TABLE p2_personen ADD COLUMN index integer;
-ALTER TABLE p3_anstellungen ADD COLUMN index integer;
-ALTER TABLE p3_einrichtungen ADD COLUMN index integer;
-ALTER TABLE p3_kommissionsmitgliedschaften ADD COLUMN index integer;
-ALTER TABLE p3_kommissionen ADD COLUMN index integer;
-ALTER TABLE p4_studierende ADD COLUMN index integer;
+ALTER TABLE public.p2_new ADD COLUMN index integer;
+ALTER TABLE public.p2_komission ADD COLUMN index integer;
+ALTER TABLE public.p2_anstellungen ADD COLUMN index integer;
+ALTER TABLE public.p2_einrichtungen ADD COLUMN index integer;
+ALTER TABLE public.p2_komissionsmitgliedschaften ADD COLUMN index integer;
+ALTER TABLE public.p2_personaldetails ADD COLUMN index integer;
+ALTER TABLE public.p3_personen ADD COLUMN index integer;
+ALTER TABLE public.p3_anstellungen ADD COLUMN index integer;
+ALTER TABLE public.p3_einrichtungen ADD COLUMN index integer;
+ALTER TABLE public.p3_kommissionsmitgliedschaften ADD COLUMN index integer;
+ALTER TABLE public.p3_kommissionen ADD COLUMN index integer;
+ALTER TABLE public.p4_studierende ADD COLUMN index integer;
 
-INSERT INTO columns AS c("columnName", "tableId", type)
-SELECT 'index', t._id, 'integer' FROM tables t;
+INSERT INTO public.columns AS c("columnName", "tableId", type)
+SELECT 'index', t._id, 'integer' FROM public.tables t;
 
-INSERT INTO view_columns AS vc(
+INSERT INTO public.view_columns AS vc(
   view_id, column_id, _kind, "displayName",
   editable, "__columnIndex__", "_cellContentType")
 SELECT v._id, c._id, 'index', 'Index', 0, 1, 'number'
-FROM (SELECT _id, "tableId" FROM columns WHERE "columnName"='index') AS c
-INNER JOIN tables t ON c."tableId"=t._id
-INNER JOIN views v ON v.base_id=t._id AND v.base_type=0;
+FROM (SELECT _id, "tableId" FROM public.columns WHERE "columnName"='index') AS c
+INNER JOIN public.tables t ON c."tableId"=t._id
+INNER JOIN public.views v ON v.base_id=t._id AND v.base_type=0;
 
-INSERT INTO view_columns AS vc(
+INSERT INTO public.view_columns AS vc(
   view_id, column_id, _kind, "displayName",
   editable, "__columnIndex__", "_cellContentType")
 SELECT v._id, c._id, 'index', 'Index', 0, 1, 'number'
-FROM (SELECT _id, view_id FROM view_columns WHERE "_kind"='index') AS c
-INNER JOIN views t ON t._id=c.view_id
-INNER JOIN views v ON v.base_id=t._id AND v.base_type=1;
+FROM (SELECT _id, view_id FROM public.view_columns WHERE "_kind"='index') AS c
+INNER JOIN public.views t ON t._id=c.view_id
+INNER JOIN public.views v ON v.base_id=t._id AND v.base_type=1;
 
 -- you can't start a sequence at 1, so we have to subtract 1. if you do
 -- setval(seq, 1), then nextval is 2, and you can't do setval(0), so then
 -- we have to subtract 2. d'oh.
-CREATE SEQUENCE ks_row_index START 2;
+CREATE SEQUENCE public.ks_row_index START 2;
 
-UPDATE p2_new SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p2_komission SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p2_anstellungen SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p2_einrichtungen SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p2_komissionsmitgliedschaften SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p2_personaldetails SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p3_anstellungen SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p3_einrichtungen SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p3_kommissionsmitgliedschaften SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p3_kommissionen SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p3_personen SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
-UPDATE p4_studierende SET index=nextval('ks_row_index')-2;
-SELECT setval('ks_row_index', 1);
+UPDATE public.p2_new SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p2_komission SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p2_anstellungen SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p2_einrichtungen SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p2_komissionsmitgliedschaften
+  SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p2_personaldetails SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p3_anstellungen SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p3_einrichtungen SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p3_kommissionsmitgliedschaften
+  SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p3_kommissionen SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p3_personen SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
+UPDATE public.p4_studierende SET index=nextval('public.ks_row_index')-2;
+SELECT setval('public.ks_row_index', 1);
 
-DROP SEQUENCE ks_row_index;
+DROP SEQUENCE public.ks_row_index;
 
 -- update view column metadata
-UPDATE view_columns SET "_cellContentType"='string';
-UPDATE view_columns SET "_cellContentType"='number'
+UPDATE public.view_columns SET "_cellContentType"='string';
+UPDATE public.view_columns SET "_cellContentType"='number'
   WHERE "displayName" IN ('ID', 'Index');
-UPDATE view_columns SET "minWidth"=128
+UPDATE public.view_columns SET "minWidth"=128
   WHERE "displayName" != 'ID';
-UPDATE view_columns SET width=80 WHERE "displayName"='ID';
+UPDATE public.view_columns SET width=80 WHERE "displayName"='ID';
 
 -- We count the number of columns with a smaller ID, thus creating an ascending
 -- index from 1 to n.
-UPDATE view_columns vc1
+UPDATE public.view_columns vc1
 SET "__columnIndex__" =
-  (SELECT count(*) FROM view_columns vc2
+  (SELECT count(*) FROM public.view_columns vc2
     WHERE vc1.view_id=vc2.view_id AND vc2._id<=vc1._id);
 
 -- remove garbage views and columns
