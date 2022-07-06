@@ -2144,11 +2144,20 @@ UPDATE public.view_columns SET "minWidth"=128
   WHERE "displayName" != 'ID';
 UPDATE public.view_columns SET width=80 WHERE "displayName"='ID';
 
+-- for the column indices, we have an especially vile hack:
+UPDATE public.view_columns vc1
+  SET "__columnIndex__"=0
+  WHERE "displayName"='ID';
+UPDATE public.view_columns vc1
+  SET "__columnIndex__"=1
+  WHERE "displayName"='Index';
 -- We count the number of columns with a smaller ID, thus creating an ascending
 -- index from 1 to n.
 UPDATE public.view_columns vc1
-SET "__columnIndex__" =
-  (SELECT count(*) FROM public.view_columns vc2
-    WHERE vc1.view_id=vc2.view_id AND vc2._id<=vc1._id);
+  SET "__columnIndex__" =
+    (SELECT count(*) FROM public.view_columns vc2
+      WHERE vc1.view_id=vc2.view_id AND vc2._id<=vc1._id
+      AND "displayName" NOT IN ('ID', 'Index')) + 1
+WHERE "displayName" NOT IN ('ID', 'Index');
 
 -- remove garbage views and columns
