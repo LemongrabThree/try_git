@@ -2095,7 +2095,8 @@ INSERT INTO view_columns AS vc(
   editable, "__columnIndex__", "_cellContentType")
 SELECT v._id, c._id, 'index', 'Index', 0, 1, 'number'
 FROM (SELECT _id, view_id FROM view_columns WHERE "_kind"='index') AS c
-INNER JOIN views v ON v._id=c.view_id;
+INNER JOIN views t ON t._id=c.view_id
+INNER JOIN views v ON v.base_id=t._id AND v.base_type=1;
 
 -- you can't start a sequence at 1, so we have to subtract 1. if you do
 -- setval(seq, 1), then nextval is 2, and you can't do setval(0), so then
@@ -2128,5 +2129,7 @@ UPDATE p4_studierende SET index=nextval('ks_row_index')-2;
 SELECT setval('ks_row_index', 1);
 
 DROP SEQUENCE ks_row_index;
+
+-- update view column metadata
 
 -- remove garbage views and columns
